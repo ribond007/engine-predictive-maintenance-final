@@ -18,8 +18,11 @@ jobs:
         python-version: "3.10"
 
     - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Authenticate Hugging Face
       run: |
-        pip install -r requirements.txt
+        echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> $GITHUB_ENV
 
     - name: Register Data
       run: python src/register_data.py
@@ -32,4 +35,3 @@ jobs:
 
     - name: Evaluate Model
       run: python src/evaluate.py
-
