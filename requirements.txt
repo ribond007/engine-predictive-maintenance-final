@@ -1,1 +1,8 @@
+datasets
+huggingface_hub
+scikit-learn
+pandas
+numpy
+joblib
+gradio
 
