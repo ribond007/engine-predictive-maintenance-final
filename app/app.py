@@ -3,7 +3,7 @@ import joblib
 import numpy as np
 from huggingface_hub import hf_hub_download
 
-MODEL_REPO = "RishiBond/engine-predictive-maintenance-model"
+MODEL_REPO = "RishiBond/engine-predictive-maintenance-final"
 
 model_path = hf_hub_download(
     repo_id=MODEL_REPO,
