@@ -7,6 +7,9 @@ import joblib
 import pandas as pd
 import os
 
+import os
+os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
+
 HF_USERNAME = "RishiBond"
 PROCESSED_DATASET = "engine-predictive-maintenance-processed"
 MODEL_REPO = "engine-predictive-maintenance-model"
