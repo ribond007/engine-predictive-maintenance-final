@@ -1,6 +1,8 @@
 from datasets import load_dataset
 from huggingface_hub import HfApi
 import os
+import os
+os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
 DATASET_NAME = "engine-predictive-maintenance"
 HF_USERNAME = "RishiBond"   
