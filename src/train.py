@@ -4,36 +4,34 @@ from sklearn.model_selection import GridSearchCV
 from sklearn.metrics import recall_score, f1_score
 from huggingface_hub import HfApi
 import joblib
-import pandas as pd
 import os
-
-import os
-os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
 
 HF_USERNAME = "RishiBond"
+
 PROCESSED_DATASET = "engine-predictive-maintenance-processed"
-MODEL_REPO = "engine-predictive-maintenance-model"
+MODEL_REPO = "predictive-maintenance-engine-model"  # MUST EXIST
 
 def train_model():
-    # Load datasets
-    train_ds = load_dataset(f"{HF_USERNAME}/{PROCESSED_DATASET}", split="train")
-    test_ds = load_dataset(f"{HF_USERNAME}/{PROCESSED_DATASET}", split="test")
+    print("📥 Loading processed dataset...")
+    dataset = load_dataset(f"{HF_USERNAME}/{PROCESSED_DATASET}")
 
-    train_df = train_ds.to_pandas()
-    test_df = test_ds.to_pandas()
+    train_df = dataset["train"].to_pandas()
+    test_df = dataset["test"].to_pandas()
 
-    X_train = train_df.drop(columns=["engine_condition"])
-    y_train = train_df["engine_condition"]
+    TARGET = "engine_condition"
 
-    X_test = test_df.drop(columns=["engine_condition"])
-    y_test = test_df["engine_condition"]
+    X_train = train_df.drop(columns=[TARGET])
+    y_train = train_df[TARGET]
 
-    # Model + GridSearch
+    X_test = test_df.drop(columns=[TARGET])
+    y_test = test_df[TARGET]
+
+    print("🚀 Training Random Forest with GridSearch...")
     rf = RandomForestClassifier(random_state=42)
 
     param_grid = {
         "n_estimators": [100, 200],
-        "max_depth": [None, 10, 20]
+        "max_depth": [None, 10]
     }
 
     grid = GridSearchCV(
@@ -45,10 +43,10 @@ def train_model():
     )
 
     grid.fit(X_train, y_train)
-    best_model = grid.best_estimator_
 
-    # Evaluation
+    best_model = grid.best_estimator_
     preds = best_model.predict(X_test)
+
     recall = recall_score(y_test, preds)
     f1 = f1_score(y_test, preds)
 
@@ -56,19 +54,22 @@ def train_model():
     print("Recall:", recall)
     print("F1 Score:", f1)
 
-    # Save model
     os.makedirs("artifacts", exist_ok=True)
-    joblib.dump(best_model, "artifacts/model.pkl")
+    model_path = "artifacts/model.pkl"
+    joblib.dump(best_model, model_path)
 
-    # Push model to HF
+    print("☁️ Uploading model to Hugging Face...")
     api = HfApi()
+
+    # IMPORTANT: repo already exists → no create_repo here
     api.upload_file(
-        path_or_fileobj="artifacts/model.pkl",
+        path_or_fileobj=model_path,
         path_in_repo="model.pkl",
         repo_id=f"{HF_USERNAME}/{MODEL_REPO}",
         repo_type="model"
     )
 
+    print("✅ Model uploaded successfully.")
+
 if __name__ == "__main__":
     train_model()
-
