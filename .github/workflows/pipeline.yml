@@ -23,6 +23,7 @@ jobs:
     - name: Authenticate Hugging Face
       run: |
         echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> $GITHUB_ENV
+        
 
     - name: Prepare Data
       run: python src/data_prep.py
