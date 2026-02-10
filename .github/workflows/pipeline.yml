@@ -24,9 +24,6 @@ jobs:
       run: |
         echo "HF_TOKEN=${{ secrets.HF_TOKEN }}" >> $GITHUB_ENV
 
-    - name: Register Data
-      run: python src/register_data.py
-
     - name: Prepare Data
       run: python src/data_prep.py
 
