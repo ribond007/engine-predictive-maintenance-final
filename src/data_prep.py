@@ -3,6 +3,9 @@ from sklearn.model_selection import train_test_split
 from huggingface_hub import HfApi
 import pandas as pd
 
+import os
+os.environ["HF_TOKEN"] = os.getenv("HF_TOKEN")
+
 HF_USERNAME = "RishiBond"
 RAW_DATASET = "engine-predictive-maintenance"
 PROCESSED_DATASET = "engine-predictive-maintenance-processed"
